@@ -28,6 +28,7 @@
 #define DEBUG_MODULE "MTR-DRV"
 
 #include <stdbool.h>
+#include <stdlib.h>
 
 /* ST includes */
 #include "stm32fxxx.h"
@@ -51,6 +52,7 @@ uint32_t motor_ratios[] = {0, 0, 0, 0};
 
 void motorsPlayTone(uint16_t frequency, uint16_t duration_msec);
 void motorsPlayMelody(uint16_t *notes);
+// void motorsPlayTones(uint16_t duration, uint16_t freq0, uint16_t freq1, uint16_t freq2, uint16_t freq3);
 void motorsBeep(int id, bool enable, uint16_t frequency, uint16_t ratio);
 
 #include "motors_def_cf2.c"
@@ -60,6 +62,8 @@ const MotorPerifDef** motorMap;  /* Current map configuration */
 const uint32_t MOTORS[] = { MOTOR_M1, MOTOR_M2, MOTOR_M3, MOTOR_M4 };
 
 const uint16_t testsound[NBR_OF_MOTORS] = {A4, A5, F5, D5 };
+//among us midi
+const uint16_t testsound2[12] = {C6, ES6, F6, GES6, F6, ES6,C6,0,0,B5,D6,C6};
 
 static bool isInit = false;
 
@@ -197,26 +201,57 @@ void motorsDeInit(const MotorPerifDef** motorMapSelect)
 
 bool motorsTest(void)
 {
-  int i;
-
-  for (i = 0; i < sizeof(MOTORS) / sizeof(*MOTORS); i++)
-  {
-    if (motorMap[i]->drvType == BRUSHED)
+  int i,u;
+  // use battery voltage to generate random number
+  unsigned int seed = (unsigned int)(pmGetBatteryVoltage()*1000);
+  srand(seed);
+  if(rand()%12==1){
+    for (u = 0; u < 12; u++)
     {
-#ifdef ACTIVATE_STARTUP_SOUND
-      motorsBeep(MOTORS[i], true, testsound[i], (uint16_t)(MOTORS_TIM_BEEP_CLK_FREQ / A4)/ 20);
-      vTaskDelay(M2T(MOTORS_TEST_ON_TIME_MS));
-      motorsBeep(MOTORS[i], false, 0, 0);
-      vTaskDelay(M2T(MOTORS_TEST_DELAY_TIME_MS));
-#else
-      motorsSetRatio(MOTORS[i], MOTORS_TEST_RATIO);
-      vTaskDelay(M2T(MOTORS_TEST_ON_TIME_MS));
-      motorsSetRatio(MOTORS[i], 0);
-      vTaskDelay(M2T(MOTORS_TEST_DELAY_TIME_MS));
-#endif
+      i=u%4;
+      if (motorMap[i]->drvType == BRUSHED)
+      {
+  #ifdef ACTIVATE_STARTUP_SOUND
+
+          motorsBeep(MOTORS[i], true, testsound2[u], (uint16_t)(MOTORS_TIM_BEEP_CLK_FREQ / testsound2[u])/ 20);
+          vTaskDelay(M2T(150));
+          motorsBeep(MOTORS[i], false, 0, 0);
+          if(u>=9){
+            // vTaskDelay(M2T(40));
+          }
+          else{
+            vTaskDelay(M2T(150));
+          }
+  #else
+        motorsSetRatio(MOTORS[i], MOTORS_TEST_RATIO);
+        vTaskDelay(M2T(MOTORS_TEST_ON_TIME_MS));
+        motorsSetRatio(MOTORS[i], 0);
+        vTaskDelay(M2T(MOTORS_TEST_DELAY_TIME_MS));
+  #endif
+      }
+    }
+
+  }
+  else{
+
+    for (i = 0; i < sizeof(MOTORS) / sizeof(*MOTORS); i++)
+    {
+      if (motorMap[i]->drvType == BRUSHED)
+      {
+  #ifdef ACTIVATE_STARTUP_SOUND
+        motorsBeep(MOTORS[i], true, testsound[i], (uint16_t)(MOTORS_TIM_BEEP_CLK_FREQ / A4)/ 20);
+        vTaskDelay(M2T(MOTORS_TEST_ON_TIME_MS));
+        motorsBeep(MOTORS[i], false, 0, 0);
+        vTaskDelay(M2T(MOTORS_TEST_DELAY_TIME_MS));
+  #else
+        motorsSetRatio(MOTORS[i], MOTORS_TEST_RATIO);
+        vTaskDelay(M2T(MOTORS_TEST_ON_TIME_MS));
+        motorsSetRatio(MOTORS[i], 0);
+        vTaskDelay(M2T(MOTORS_TEST_DELAY_TIME_MS));
+  #endif
+      }
     }
   }
-
   return isInit;
 }
 
@@ -324,6 +359,24 @@ void motorsPlayMelody(uint16_t *notes)
     motorsPlayTone(note, duration);
   } while (duration != 0);
 }
+
+
+// Plays different tones for each propeller
+void motorsPlayTones(uint16_t duration, uint16_t freq0, uint16_t freq1, uint16_t freq2, uint16_t freq3)
+{
+
+  motorsBeep(MOTOR_M1, true, freq0, (uint16_t)(MOTORS_TIM_BEEP_CLK_FREQ / freq0)/ 20);
+  motorsBeep(MOTOR_M2, true, freq1, (uint16_t)(MOTORS_TIM_BEEP_CLK_FREQ / freq1)/ 20);
+  motorsBeep(MOTOR_M3, true, freq2, (uint16_t)(MOTORS_TIM_BEEP_CLK_FREQ / freq2)/ 20);
+  motorsBeep(MOTOR_M4, true, freq3, (uint16_t)(MOTORS_TIM_BEEP_CLK_FREQ / freq3)/ 20);
+  vTaskDelay(M2T(duration));
+
+  motorsBeep(MOTOR_M1, false, freq0, 0);
+  motorsBeep(MOTOR_M2, false, freq1, 0);
+  motorsBeep(MOTOR_M3, false, freq2, 0);
+  motorsBeep(MOTOR_M4, false, freq3, 0);
+}
+
 LOG_GROUP_START(pwm)
 LOG_ADD(LOG_UINT32, m1_pwm, &motor_ratios[0])
 LOG_ADD(LOG_UINT32, m2_pwm, &motor_ratios[1])

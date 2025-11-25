@@ -44,6 +44,7 @@
 #include "controller.h"
 #include "power_distribution.h"
 #include "health.h"
+#include "sing.h"
 
 #include "estimator.h"
 #include "usddeck.h"
@@ -231,6 +232,10 @@ static void stabilizerTask(void* param)
     {
       sensorsAcquire(&sensorData, tick);
       healthRunTests(&sensorData);
+    }
+    else if (shallWeSing())
+    {
+      doSing();
     } else {
       // allow to update estimator dynamically
       if (getStateEstimator() != estimatorType) {

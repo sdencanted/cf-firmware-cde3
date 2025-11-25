@@ -131,5 +131,5 @@ static void commanderCrtpCB(CRTPPacket* pk)
       /* Do nothing */
       break;
     }
-  }
+  } 
 }

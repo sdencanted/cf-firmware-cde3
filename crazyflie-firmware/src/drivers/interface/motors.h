@@ -228,7 +228,8 @@ extern const MotorPerifDef* motorMapBoltBrushless[NBR_OF_MOTORS];
 /**
  * Test sound tones
  */
-extern const uint16_t testsound[NBR_OF_MOTORS];
+extern const uint16_t testsound[4];
+extern const uint16_t testsound2[12];
 /*** Public interface ***/
 
 /**
@@ -273,5 +274,6 @@ void motorsTestTask(void* params);
  * */
 void motorsBeep(int id, bool enable, uint16_t frequency, uint16_t ratio);
 
+void motorsPlayTones(uint16_t duration, uint16_t freq0, uint16_t freq1, uint16_t freq2, uint16_t freq3);
 #endif /* __MOTORS_H__ */
 
