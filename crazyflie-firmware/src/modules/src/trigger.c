@@ -117,7 +117,6 @@ void triggerActivate(trigger_t *trigger, bool active)
 void triggerReset(trigger_t *trigger)
 {
   assert_param(trigger != NULL);
-
   trigger->testCounter = 0;
   trigger->released = false;
   trigger->handlerCalled = false;

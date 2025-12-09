@@ -286,6 +286,7 @@ void stabilizerSetEmergencyStop()
 
 void stabilizerResetEmergencyStop()
 {
+  emergencyStopTimeout = EMERGENCY_STOP_TIMEOUT_DISABLED;
   emergencyStop = false;
 }
 
@@ -299,6 +300,7 @@ PARAM_GROUP_START(stabilizer)
 PARAM_ADD(PARAM_UINT8, estimator, &estimatorType)
 PARAM_ADD(PARAM_UINT8, controller, &controllerType)
 PARAM_ADD(PARAM_UINT8, stop, &emergencyStop)
+PARAM_ADD(PARAM_INT16, stoptimeout, &emergencyStopTimeout)
 PARAM_GROUP_STOP(stabilizer)
 
 LOG_GROUP_START(ctrltarget)

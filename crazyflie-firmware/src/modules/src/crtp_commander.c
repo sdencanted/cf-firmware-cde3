@@ -31,6 +31,7 @@
 #include "cfassert.h"
 #include "commander.h"
 #include "crtp.h"
+#include "sing.h"
 
 
 static bool isInit;
@@ -45,6 +46,7 @@ void crtpCommanderInit(void)
 
   crtpInit();
   crtpRegisterPortCB(CRTP_PORT_SETPOINT, commanderCrtpCB);
+  crtpRegisterPortCB(CRTP_PORT_SING, commanderCrtpCB);
   crtpRegisterPortCB(CRTP_PORT_SETPOINT_GENERIC, commanderCrtpCB);
   isInit = true;
 }
@@ -131,5 +133,7 @@ static void commanderCrtpCB(CRTPPacket* pk)
       /* Do nothing */
       break;
     }
-  } 
+  } else if(pk->port == CRTP_PORT_SING) {
+    singDecode(pk);
+  }
 }

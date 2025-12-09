@@ -76,6 +76,7 @@ bool sitAwARDetected(void);
 #endif
 #ifdef SITAW_TU_ENABLED
 bool sitAwTuDetected(void);
+void sitAwTuReset(void);
 #endif
 
 #endif

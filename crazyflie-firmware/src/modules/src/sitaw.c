@@ -328,6 +328,15 @@ bool sitAwTuDetected(void)
 {
   return sitAwTuAcc.released;
 }
+
+
+/**
+ * Reset the Tumbled detection.
+ */
+void sitAwTuReset(void)
+{
+  triggerReset(&sitAwTuAcc);
+}
 #endif
 
 /**

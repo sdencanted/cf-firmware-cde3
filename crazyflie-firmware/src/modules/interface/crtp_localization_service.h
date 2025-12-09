@@ -57,6 +57,7 @@ typedef enum
   LPS_SHORT_LPP_PACKET    = 2,
   EMERGENCY_STOP          = 3,
   EMERGENCY_STOP_WATCHDOG = 4,
+  EMERGENCY_STOP_RESET = 5,
   COMM_GNSS_NMEA           = 6,
   COMM_GNSS_PROPRIETARY    = 7,
   EXT_POSE                 = 8,

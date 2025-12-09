@@ -48,6 +48,7 @@
 #include "peer_localization.h"
 
 #include "num.h"
+#include "sitaw.h"
 
 #define NBR_OF_RANGES_IN_PACKET   5
 #define NBR_OF_SWEEPS_IN_PACKET   2
@@ -273,6 +274,11 @@ static void genericLocHandle(CRTPPacket* pk)
       break;
     case EMERGENCY_STOP:
       stabilizerSetEmergencyStop();
+      break;
+    case EMERGENCY_STOP_RESET:
+      stabilizerResetEmergencyStop();
+      sitAwTuReset();
+      // motorsTest();
       break;
     case EMERGENCY_STOP_WATCHDOG:
       stabilizerSetEmergencyStopTimeout(DEFAULT_EMERGENCY_STOP_TIMEOUT);

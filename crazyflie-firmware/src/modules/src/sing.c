@@ -44,7 +44,7 @@
 #include "motors.h"
 #include "sensors.h"
 #include "pm.h"
-
+#include "crtp.h"
 #include "static_mem.h"
 static bool startSing=false;
 static uint16_t duration,frequency_0,frequency_1,frequency_2,frequency_3;
@@ -60,11 +60,40 @@ bool shallWeSing()
 void doSing(){
     motorsPlayTones(duration,frequency_0,frequency_1,frequency_2,frequency_3);
 }
-PARAM_GROUP_START(sing)
-PARAM_ADD(PARAM_UINT8, s, &startSing)
-PARAM_ADD(PARAM_UINT16, d, &duration)
-PARAM_ADD(PARAM_UINT16, f0, &frequency_0)
-PARAM_ADD(PARAM_UINT16, f1, &frequency_1)
-PARAM_ADD(PARAM_UINT16, f2, &frequency_2)
-PARAM_ADD(PARAM_UINT16, f3, &frequency_3)
-PARAM_GROUP_STOP(sing)
+
+/**
+ * sing packet format
+ */
+struct SingCrtpValues
+{
+  uint16_t duration;       // deg
+  uint16_t frequency_0;      // deg
+  uint16_t frequency_1;        // deg
+  uint16_t frequency_2;        // deg
+  uint16_t frequency_3;        // deg
+} __attribute__((packed));
+void singDecode(CRTPPacket* pk)
+{
+    if (pk->size < 10) {
+        return;
+    }
+    //decode in little endian, python code to encode is below:
+    /*
+    sing_pk.data=struct.pack('<5H', duration_ms,freq[0], freq[1], freq[2], freq[3])
+    */
+    struct SingCrtpValues *values = (struct SingCrtpValues*)pk->data;
+    duration = values->duration;
+    frequency_0 = values->frequency_0;
+    frequency_1 = values->frequency_1;
+    frequency_2 = values->frequency_2;
+    frequency_3 = values->frequency_3;
+    startSing = true;
+}
+// PARAM_GROUP_START(sing)
+// PARAM_ADD(PARAM_UINT8, s, &startSing)
+// PARAM_ADD(PARAM_UINT16, d, &duration)
+// PARAM_ADD(PARAM_UINT16, f0, &frequency_0)
+// PARAM_ADD(PARAM_UINT16, f1, &frequency_1)
+// PARAM_ADD(PARAM_UINT16, f2, &frequency_2)
+// PARAM_ADD(PARAM_UINT16, f3, &frequency_3)
+// PARAM_GROUP_STOP(sing)
